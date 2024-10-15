@@ -7,7 +7,7 @@ export default class HashMap {
   constructor(bucketLength = 16, loadFactor = 0.75) {
     this.#loadFactor = loadFactor;
     this.#bucketLength = bucketLength;
-    this.#buckets = [];
+    this.#buckets = Array(this.#bucketLength).fill(null);
     this.#size = 0;
   }
 
@@ -31,8 +31,8 @@ export default class HashMap {
       this.#buckets[index].value = value;
     } else {
       this.#buckets[index] = { key, value };
+      this.#size += 1;
     }
-    this.#size += 1;
     return;
   }
 
@@ -47,7 +47,7 @@ export default class HashMap {
     const index = this.hash(key);
     if (index < 0 || index >= this.#bucketLength) {
       throw new Error("Trying to access index out of bound");
-    } else if (this.#buckets[index] !== undefined) {
+    } else if (this.#buckets[index] !== null) {
       return true;
     }
     return false;
@@ -56,7 +56,7 @@ export default class HashMap {
   remove(key) {
     const index = this.hash(key);
     if (this.has(key)) {
-      this.#buckets[index] = undefined;
+      this.#buckets[index] = null;
       this.#size -= 1;
       return true;
     }
@@ -65,6 +65,31 @@ export default class HashMap {
 
   length() {
     return this.#size;
+  }
+
+  clear() {
+    this.#buckets = Array(this.#bucketLength).fill(null);
+    this.#size = 0;
+  }
+
+  keys() {
+    const keysArray = [];
+    for (let b of this.#buckets) {
+      if (b !== null) {
+        keysArray.push(b.key);
+      }
+    }
+    return keysArray;
+  }
+
+  values() {
+    const valuesArray = [];
+    for (let b of this.#buckets) {
+      if (b !== null) {
+        valuesArray.push(b.value);
+      }
+    }
+    return valuesArray;
   }
 
   checkFull() {
