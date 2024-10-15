@@ -92,6 +92,16 @@ export default class HashMap {
     return valuesArray;
   }
 
+  entries() {
+    const entriesArray = [];
+    for (let b of this.#buckets) {
+      if (b !== null) {
+        entriesArray.push([b.key, b.value]);
+      }
+    }
+    return entriesArray;
+  }
+
   checkFull() {
     if (this.#size / this.#bucketLength > this.#loadFactor) return true;
     return false;
