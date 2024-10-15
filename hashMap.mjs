@@ -26,6 +26,9 @@ export default class HashMap {
   }
 
   set(key, value) {
+    if (this.checkFull()) {
+      this.reloadHashMap();
+    }
     const index = this.hash(key);
     if (this.has(key)) {
       this.#buckets[index].value = value;
@@ -105,5 +108,23 @@ export default class HashMap {
   checkFull() {
     if (this.#size / this.#bucketLength > this.#loadFactor) return true;
     return false;
+  }
+
+  reloadHashMap() {
+    this.#bucketLength *= 2;
+    this.#size = 0;
+
+    const newMap = Array(this.#bucketLength).fill(null);
+    for (let b of this.#buckets) {
+      if (b !== null) {
+        const index = this.hash(b.key);
+        if (newMap[index] !== null) {
+          newMap[index].value = b.value;
+        }
+        newMap[index] = { key: b.key, value: b.value };
+        this.#size += 1;
+      }
+    }
+    this.#buckets = newMap;
   }
 }
