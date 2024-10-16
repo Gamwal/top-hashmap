@@ -1,3 +1,4 @@
+import LinkedList from "./linkedList.mjs";
 export default class HashMap {
   #loadFactor;
   #bucketLength;
@@ -31,9 +32,12 @@ export default class HashMap {
     }
     const index = this.hash(key);
     if (this.has(key)) {
-      this.#buckets[index].value = value;
+      const bucket = this.#buckets[index];
+      bucket.append({ key, value });
     } else {
-      this.#buckets[index] = { key, value };
+      const bucket = new LinkedList();
+      bucket.append({ key, value });
+      this.#buckets[index] = bucket;
       this.#size += 1;
     }
     return;
