@@ -31,8 +31,8 @@ export default class HashMap {
       this.reloadHashMap();
     }
     const index = this.hash(key);
-    if (this.has(key)) {
-      const bucket = this.#buckets[index];
+    const bucket = this.#buckets[index];
+    if (bucket) {
       bucket.append({ key, value });
     } else {
       const bucket = new LinkedList();
@@ -45,26 +45,54 @@ export default class HashMap {
 
   get(key) {
     if (this.has(key)) {
-      return this.#buckets[this.hash(key)];
+      const bucket = this.#buckets[this.hash(key)];
+      let current = bucket.root;
+      while (current) {
+        if (current.value.key === key) {
+          return current.value.value;
+        }
+        current = current.nextNode;
+      }
     }
     return null;
   }
 
   has(key) {
     const index = this.hash(key);
+    const bucket = this.#buckets[index];
     if (index < 0 || index >= this.#bucketLength) {
       throw new Error("Trying to access index out of bound");
-    } else if (this.#buckets[index] !== null) {
-      return true;
+    } else if (bucket !== null) {
+      let current = bucket.root;
+      while (current) {
+        if (current.value.key === key) {
+          return true;
+        }
+        current = current.nextNode;
+      }
     }
     return false;
   }
 
   remove(key) {
-    const index = this.hash(key);
     if (this.has(key)) {
-      this.#buckets[index] = null;
-      this.#size -= 1;
+      const index = this.hash(key);
+      let bucket = this.#buckets[index];
+      let itemIndex = 0;
+      let current = bucket.root;
+
+      while (current) {
+        if (current.value.key === key) {
+          break;
+        }
+        itemIndex++;
+        current = current.nextNode;
+      }
+      bucket.removeAt(itemIndex);
+      if (bucket.root === null) {
+        this.#buckets[index] = null;
+        this.#size -= 1;
+      }
       return true;
     }
     return false;
