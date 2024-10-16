@@ -33,6 +33,15 @@ export default class HashMap {
     const index = this.hash(key);
     const bucket = this.#buckets[index];
     if (bucket) {
+      if (this.has(key)) {
+        let current = bucket.root;
+        while (current) {
+          if (current.value.key === key) {
+            current.value.value = value;
+            return;
+          }
+        }
+      }
       bucket.append({ key, value });
     } else {
       const bucket = new LinkedList();
@@ -111,7 +120,11 @@ export default class HashMap {
     const keysArray = [];
     for (let b of this.#buckets) {
       if (b !== null) {
-        keysArray.push(b.key);
+        let current = b.root;
+        while (current) {
+          keysArray.push(current.value.key);
+          current = current.nextNode;
+        }
       }
     }
     return keysArray;
@@ -121,7 +134,11 @@ export default class HashMap {
     const valuesArray = [];
     for (let b of this.#buckets) {
       if (b !== null) {
-        valuesArray.push(b.value);
+        let current = b.root;
+        while (current) {
+          valuesArray.push(current.value.value);
+          current = current.nextNode;
+        }
       }
     }
     return valuesArray;
@@ -131,7 +148,11 @@ export default class HashMap {
     const entriesArray = [];
     for (let b of this.#buckets) {
       if (b !== null) {
-        entriesArray.push([b.key, b.value]);
+        let current = b.root;
+        while (current) {
+          entriesArray.push([current.value.key, current.value.value]);
+          current = current.nextNode;
+        }
       }
     }
     return entriesArray;
@@ -144,19 +165,19 @@ export default class HashMap {
 
   reloadHashMap() {
     this.#bucketLength *= 2;
-    this.#size = 0;
 
-    const newMap = Array(this.#bucketLength).fill(null);
+    const newMap = new HashMap(this.#bucketLength);
+
     for (let b of this.#buckets) {
       if (b !== null) {
-        const index = this.hash(b.key);
-        if (newMap[index] !== null) {
-          newMap[index].value = b.value;
+        let current = b.root;
+        while (current) {
+          newMap.set(current.value.key, current.value.value);
+          current = current.nextNode;
         }
-        newMap[index] = { key: b.key, value: b.value };
-        this.#size += 1;
       }
     }
-    this.#buckets = newMap;
+    this.#buckets = newMap.#buckets;
+    this.#size = newMap.#size;
   }
 }

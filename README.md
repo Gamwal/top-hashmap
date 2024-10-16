@@ -1,14 +1,13 @@
 # HashMap Implementation
 
-This project provides a custom implementation of a HashMap data structure in JavaScript. It includes features such as dynamic resizing, handling collisions, and managing key-value pairs. The implementation is optimized to handle data efficiently with a customizable bucket length and load factor.
+This project provides a JavaScript implementation of a HashMap (or dictionary), utilizing a Linked List for collision handling (chaining). The HashMap allows storing key-value pairs with dynamic resizing based on a load factor. This update introduces improvements such as collision handling using linked lists and dynamic resizing when the load factor threshold is exceeded.
 
 ## Features
 
-- **Custom Hashing Function**: Generates a hash based on a string key using a prime multiplier technique.
-- **Dynamic Resizing**: Automatically resizes the internal bucket array when the load factor exceeds a set threshold.
-- **Efficient Storage**: Uses key-value pairs stored in an array structure, ensuring fast access, insertion, and deletion.
-- **Collisions Handling**: Properly manages keys with the same hash code.
-- **Additional Methods**: Includes methods like `get()`, `set()`, `remove()`, `keys()`, `values()`, and `entries()` for effective data handling.
+- **Chaining with Linked Lists**: In the case of hash collisions (where multiple keys map to the same bucket), the keys are stored in a linked list to avoid overwriting. Each bucket contains a linked list, and new key-value pairs are appended when a collision occurs.
+- **Automatic Resizing**: The hash map dynamically doubles its bucket size once the load factor is exceeded. During resizing, elements are rehashed and redistributed across the new bucket array to maintain efficiency.
+- **Load Factor**: A customizable load factor (default `0.75`) determines when the hash map should resize. This ensures optimal performance by balancing memory usage and search times.
+- **Hash Function**: A simple but effective hash function using a prime number multiplier (31) for string keys. The hash function converts keys into an index within the bucket array.
 
 ## Methods
 
